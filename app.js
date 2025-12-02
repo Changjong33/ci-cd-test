@@ -1,6 +1,6 @@
-const express = require('express');
-const cors = require('cors');
-const dogsRoutes = require('./routes/dogs');
+const express = require("express");
+const cors = require("cors");
+const dogsRoutes = require("./routes/dogs");
 
 const app = express();
 
@@ -9,15 +9,15 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-app.get('/', (req, res) => {
-    res.send('안녕하세요 ??? 서버 입니다.');
+app.get("/", (req, res) => {
+  res.send("안녕하세요 ??? 서버 입니다.");
 });
-app.use('/dogs', dogsRoutes);
+app.use("/dogs", dogsRoutes);
 
 // Error Handling Middleware
 app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).send({ error: 'Something went wrong!' });
+  console.error(err.stack);
+  res.status(500).send({ error: "Something went wrong!" });
 });
 
 module.exports = app;

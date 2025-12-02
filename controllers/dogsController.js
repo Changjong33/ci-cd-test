@@ -11,14 +11,14 @@ const asyncHandler = (fn) => (req, res, next) => {
 
 // Get all dogs
 exports.getDogs = asyncHandler(async (req, res) => {
-  const dogs = await prisma.dog.findMany();
+  const dogs = await prisma.dogs.findMany();
   res.json(dogs);
 });
 
 // Add a new dog
 exports.addDog = asyncHandler(async (req, res) => {
   const { name, breed, age } = req.body;
-  const newDog = await prisma.dog.create({
+  const newDog = await prisma.dogs.create({
     data: { name, breed, age },
   });
   res.status(201).json(newDog);
@@ -27,7 +27,7 @@ exports.addDog = asyncHandler(async (req, res) => {
 // Delete a dog by ID
 exports.deleteDog = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const deletedDog = await prisma.dog.delete({
+  const deletedDog = await prisma.dogs.delete({
     where: { id: parseInt(id) },
   });
   res.json(deletedDog);
@@ -37,7 +37,7 @@ exports.deleteDog = asyncHandler(async (req, res) => {
 exports.updateDog = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const { name, breed, age } = req.body;
-  const updatedDog = await prisma.dog.update({
+  const updatedDog = await prisma.dogs.update({
     where: { id: parseInt(id) },
     data: { name, breed, age },
   });
