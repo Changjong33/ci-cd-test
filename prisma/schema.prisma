@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = env("postgresql://nick:g2LYmPLVsxrwyqNXEg6zyQpa4l2Mnp7w@dpg-d4n53vre5dus738rrpi0-a.singapore-postgres.render.com:5432/zoo_wlmk")
 }
 
 model dogs {
