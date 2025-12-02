@@ -1,46 +1,51 @@
-const dogs = require("../data/dogsData");
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
+
+// 공통 에러 핸들링 함수
+const asyncHandler = (fn) => (req, res, next) => {
+  Promise.resolve(fn(req, res, next)).catch((error) => {
+    console.error(error);
+    res.status(500).json({ error: "An unexpected error occurred", details: error.message });
+  });
+};
 
 // Get all dogs
-exports.getDogs = (req, res) => {
+exports.getDogs = asyncHandler(async (req, res) => {
+  const dogs = await prisma.dog.findMany();
   res.json(dogs);
-};
+});
 
 // Add a new dog
-exports.addDog = (req, res) => {
+exports.addDog = asyncHandler(async (req, res) => {
   const { name, breed, age } = req.body;
-  const newDog = {
-    id: dogs.length + 1,
-    name,
-    breed,
-    age,
-  };
-  dogs.push(newDog);
+  const newDog = await prisma.dog.create({
+    data: { name, breed, age },
+  });
   res.status(201).json(newDog);
-};
+});
 
 // Delete a dog by ID
-exports.deleteDog = (req, res) => {
+exports.deleteDog = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const index = dogs.findIndex((dog) => dog.id === parseInt(id));
-  if (index !== -1) {
-    const deletedDog = dogs.splice(index, 1);
-    res.json(deletedDog);
-  } else {
-    res.status(404).json({ error: "Dog not found" });
-  }
-};
+  const deletedDog = await prisma.dog.delete({
+    where: { id: parseInt(id) },
+  });
+  res.json(deletedDog);
+});
 
 // Update a dog by ID
-exports.updateDog = (req, res) => {
+exports.updateDog = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const { name, breed, age } = req.body;
-  const dog = dogs.find((dog) => dog.id === parseInt(id));
-  if (dog) {
-    dog.name = name || dog.name;
-    dog.breed = breed || dog.breed;
-    dog.age = age || dog.age;
-    res.json(dog);
-  } else {
-    res.status(404).json({ error: "Dog not found" });
-  }
-};
+  const updatedDog = await prisma.dog.update({
+    where: { id: parseInt(id) },
+    data: { name, breed, age },
+  });
+  res.json(updatedDog);
+});
+
+// 서버 종료 시 Prisma 연결 닫기
+process.on("SIGINT", async () => {
+  await prisma.$disconnect();
+  process.exit(0);
+});
